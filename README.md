@@ -16,16 +16,14 @@ _The accurate inference of pathogen movements between locations during an epidem
 The structure of this repository is shown below:
 
 ```
-├── LICENSE.txt
-├── README.md
 ├── analyses
 │   ├── COVID19_studies_plot.ipynb
+│   ├── lineage_detection_prob_heatmap.ipynb
 │   ├── deterministic_model
 │   │   ├── cumulative_lineage_size_distribution_plot.ipynb
 │   │   ├── inferred_importation_rates_plot.ipynb
 │   │   ├── lineage_detection_probs_plot.ipynb
 │   │   └── run_simulation.py
-│   ├── lineage_detection_prob_heatmap.ipynb
 │   └── stochastic_abm
 │       ├── inferred_importation_rates_plot.ipynb
 │       ├── lineage_detection_probs_plot.ipynb
@@ -40,6 +38,8 @@ The structure of this repository is shown below:
 │       ├── world-administrative-boundaries.prj
 │       ├── world-administrative-boundaries.shp
 │       └── world-administrative-boundaries.shx
+├── LICENSE.txt
+├── README.md
 └── gitignore.txt
 ```
 
