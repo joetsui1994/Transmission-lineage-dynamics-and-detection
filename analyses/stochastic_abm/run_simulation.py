@@ -312,7 +312,6 @@ for exp_i in tqdm(range(num_experiments)):
 # convert exp_dfs_clustered to a single dataframe, with columns for experiment number
 exp_dfs_clustered_combined = pd.concat(exp_dfs_clustered, keys=range(num_experiments), names=["experiment"]).reset_index(level=0)
 # export to csv (compressed), creating output directory if it doesn't exist
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+os.makedirs(output_dir, exist_ok=True)
 print('exporting results...')
 exp_dfs_clustered_combined.to_csv("./%s/T%d.csv.gz" % (output_dir, num_steps), index=False, compression='gzip')

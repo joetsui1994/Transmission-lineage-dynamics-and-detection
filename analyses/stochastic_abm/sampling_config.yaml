@@ -1,0 +1,16 @@
+input_file: "./results/T10.csv.gz"
+output_dir: "./results"
+num_draws: 200
+random_seed: 42
+
+# for generating the lineage detection probability curves
+sampling_grid:
+  split_threshold: 0.05
+  num_divisions_lower: 30
+  num_divisions_upper: 30
+
+# for generating in the inferred importation intensity curves
+temporal_analysis:
+  enabled: true
+  # only calculate temporal intensity for these specific fractions
+  target_fractions: [0.01, 0.05, 0.15, 0.5, 0.9]

@@ -1,12 +1,13 @@
+# general settings
 simulation:
   seed: 42
   num_agents: 100000
-  num_steps: 20
+  num_steps: 10
   num_experiments: 20
   num_patient_zero: 0 # number of initial infected agents (at home location) (default: 0)
   output_dir: "./results"
 
-# Define the dynamic parameters
+# epidemiological parameters
 parameters:
   beta:
     type: "constant"
@@ -25,7 +26,5 @@ parameters:
     value: 0.1
 
   importation:
-    type: "exponential"
-    params:
-      initial: 1
-      growth: 0.2
+    type: "constant"
+    value: 100
