@@ -47,3 +47,4 @@ study	continent	country	location	seq_num	sampling_prop
 "Variant-specific introduction and dispersal dynamics of SARS-CoV-2 in New York City - from Alpha to Omicron (Dellicour et al., 2023, PLOS Pathogens; https://doi.org/10.1371/journal.ppat.1011348)"	North America	USA	New York City	12093	0.0092
 "Regional importation and asymmetric within-country spread of SARS-CoV-2 variants of concern in the Netherlands (Han et al., 2022, eLife; https://doi.org/10.7554/eLife.78770)"	Europe	Netherlands	NA	3596	0.0038
 "Genomic evolution and early introductions of the SARS-CoV-2 Omicron Variant in Mexico (Castelán-Sánchez et al., 2022, Virus Evolution; https://doi.org/10.1093/ve/veac109)"	North America	Mexico	NA	641	0.00034
+"Importations of SARS-CoV-2 lineages decline after nonpharmaceutical interventions in phylogeographic analyses (Goliaei et al., 2024, Nature Communications; https://doi.org/10.1038/s41467-024-48641-2)"	Europe	Germany	NA	1194	0.00035
