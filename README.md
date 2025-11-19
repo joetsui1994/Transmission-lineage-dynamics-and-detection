@@ -43,4 +43,54 @@ The structure of this repository is shown below:
 └── gitignore.txt
 ```
 
+## Stochastic agent-based simulation
+
+Model parameters are specified through a YAML configuration file. To run a simulation, simply execute the `run_simulation.py` script located in the `analyses/stochastic_abm/` directory, providing the path to your configuration file as an argument (`--config`). For example:
+
+```bash
+python run_simulation.py --config config.yaml
+```
+
+This will run the simulation and save the results as a compressed CSV file to the output directory specified in your configuration file (default is `./results`).
+
+### Configuration file format
+
+The configuration file should be in YAML format and include the following sections:
+
+```yaml
+simulation:
+  seed: <random_seed>
+  num_agents: <number_of_agents>
+  num_steps: <number_of_time_steps>
+  num_experiments: <number_of_experiments>
+  output_dir: <output_directory>
+parameters:
+  num_patient_zero: <number_of_initial_infected_agents>
+  beta: <transmission_probability_parameters>
+  kappa: <contact_rate_parameters>
+  gamma: <recovery_rate_parameters>
+  importation: <importation_rate_parameters>
+```
+
+#### General settings
+- `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
+- `<number_of_agents>`: Total population size (or number of agents) (integer).
+- `<number_of_time_steps>`: Duration of the simulation in discrete time steps (integer).
+- `<number_of_experiments>`: Number of independent simulation runs (integer).
+- `<number_of_initial_infected_agents>`: Number of initially infected agents at the start of the simulation (integer).
+- `<output_directory>`: Directory where simulation results will be saved.
+
+#### Epidemiological parameters
+- `<transmission_probability_parameters>`: Parameters defining the probability of infection per contact ($$\beta$$).
+- `<contact_rate_parameters>`: Parameters defining the average number of contacts per agent per time step ($$\kappa$$).
+- `<recovery_rate_parameters>`: Parameters defining the recovery rate per time step ($$\gamma$$).
+- `<importation_rate_parameters>`: Parameters defining the rate at which new infections are imported into the population per day.
+
+Each epidemiological parameter supports the following types, allowing for dynamic changes over time:
+| Type | Description | Required Keys in `params` |
+| :--- | :--- | :--- |
+| **`constant`** | Value remains fixed throughout the simulation. | `value`: The constant value (float/int). |
+| **`sigmoid`** | Transitions from an initial to a final value following a sigmoid trajectory (e.g., following the implementation/lifting of travel restrictions). | `a`: time-shift (the greater it is, the later the growth/decay starts).<br>`b`: Growth rate (the greater it is, the sharper the change).<br>`c`: Initial value.<br>`d`: Final value. |
+| **`exponential`** | Grows or decays exponentially over time. | `initial`: Value at $t=0$.<br>`growth`: Rate coefficient ($>0$ for growth, $<0$ for decay). |
+
 ---
