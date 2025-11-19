@@ -103,7 +103,7 @@ if __name__ == "__main__":
         for sf in all_sfs:
             num_sample = int(sf * num_infected)
             
-            # Calculate Scalar Detection (Fast)
+            # calculate scalar detection
             if num_sample == 0:
                 results_scalar[sf].extend([0.0] * num_draws)
                 if sf in sfs_temporal:
