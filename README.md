@@ -90,7 +90,7 @@ Each epidemiological parameter supports the following types, allowing for dynami
 | Type | Description | Required Keys in `params` |
 | :--- | :--- | :--- |
 | **`constant`** | Value remains fixed throughout the simulation. | `value`: The constant value (float/int). |
-| **`sigmoid`** | Transitions from an initial to a final value following a sigmoid trajectory (e.g., following the implementation/lifting of travel restrictions). | `a`: time-shift (the greater it is, the later the growth/decay starts).<br>`b`: Growth rate (the greater it is, the sharper the change).<br>`c`: Initial value.<br>`d`: Final value. |
+| **`sigmoid`** | Transitions from an initial to a final value following a sigmoid trajectory (e.g., following the implementation/lifting of travel restrictions). | `a`: Time-shift (the greater it is, the later the growth/decay starts).<br>`b`: Growth rate (the greater it is, the sharper the change).<br>`c`: Initial value.<br>`d`: Final value. |
 | **`exponential`** | Grows or decays exponentially over time. | `initial`: Value at $t=0$.<br>`growth`: Rate coefficient ($>0$ for growth, $<0$ for decay). |
 
 ---
