@@ -3,7 +3,70 @@
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+import argparse
+import yaml
+import sys
+import os
 
+
+# ===============================
+# Parameters validation
+# ===============================
+def validate_params(func_name, params, required_keys):
+    missing = [key for key in required_keys if key not in params]
+    if missing:
+        raise ValueError(
+            f"Configuration Error: The '{func_name}' function is missing "
+            f"required parameters: {missing}. Please check your YAML file."
+        )
+
+
+# ===============================
+# Function factory
+# ===============================
+
+def build_time_function(name, param_config):
+    """
+    Returns a function f(t) based on the configuration dictionary.
+    'name' is passed just for better error messages (e.g. 'contact_rate').
+    """
+    # check if 'type' is specified
+    if 'type' not in param_config:
+        raise ValueError(f"Configuration Error: '{name}' is missing the 'type' field.")
+
+    func_type = param_config['type']
+    
+    # check if 'params' exists (unless type is constant and uses 'value')
+    if func_type != 'constant' and 'params' not in param_config:
+        raise ValueError(f"Configuration Error: '{name}' (type: {func_type}) requires a 'params' section.")
+
+    if func_type == 'constant':
+        if 'value' not in param_config:
+             raise ValueError(f"Configuration Error: '{name}' (type: constant) requires a 'value'.")
+        val = param_config['value']
+        return lambda t: val
+        
+    elif func_type == 'sigmoid':
+        p = param_config['params']
+        # validate specific parameters for sigmoid
+        validate_params(name, p, ['a', 'b', 'c', 'd'])
+        
+        # value constraints (e.g., growth rate must be positive)
+        if p['b'] < 0:
+             raise ValueError(f"Configuration Error: In '{name}', parameter 'b' (growth rate) must be positive.")
+             
+        return lambda t: sigmoid_func(t, p['a'], p['b'], p['c'], p['d'])
+        
+    elif func_type == 'exponential':
+        p = param_config['params']
+        validate_params(name, p, ['initial', 'growth'])
+        return lambda t: int(p['initial'] * np.exp(p['growth'] * t))
+        
+    else:
+        # catch unknown function types
+        raise ValueError(f"Configuration Error: Unknown function type '{func_type}' for '{name}'. "
+                         f"Supported types are: constant, sigmoid, exponential.")
+        
 
 # ===============================
 # Utility functions
@@ -171,59 +234,60 @@ def label_agents_by_cluster(df, clusters):
 
 
 # ===============================
-# Simulation parameters
+# Main execution
 # ===============================
 
-num_agents = 100000 # starting local population
-num_patient_zero = 0 # number of infected people at the start (not imported)
-num_steps = 20 # number of days to simulate
-num_experiments = 200 # number of experiments to run
+if __name__ == "__main__":
+    # parse command line arguments
+    parser = argparse.ArgumentParser(description="Run stochastic ABM simulation with viral importation.")
+    parser.add_argument('--config', type=str, required=True, help="Path to YAML config file")
+    args = parser.parse_args()
 
-output_dir = "./results"
+    # load config file
+    print('loading config file...')
+    with open(args.config, 'r') as f:
+        config = yaml.safe_load(f)
 
-## set up functions for beta, contact rate, recovery rate, and importation rate
-# fixed beta
-beta_0 = 0.025
-def beta_t(t):
-    return beta_0
+    # extract parameters from config
+    sim_conf = config['simulation']
+    seed = sim_conf.get('seed', 42)  # default to 42 if not specified
+    num_agents = sim_conf.get('num_agents', 10000)  # default to 10000 if not specified
+    num_steps = sim_conf.get('num_steps', 100)  # default to 100 if not specified
+    num_experiments = sim_conf.get('num_experiments', 10)  # default to 10 if not specified
+    num_patient_zero = sim_conf.get('num_patient_zero', 0)  # default to 0 if not specified
+    output_dir = sim_conf.get('output_dir', './results')  # default to ./results if not specified
 
-# sigmoidal contact rate
-kappa_0 = 10
-def kappa_t(t):
-    return sigmoid_func(t, 10, 1.5, 10, 1)
+    # set random seed for reproducibility
+    np.random.seed(seed)
 
-# fixed recovery rate
-gamma_0 = 0.1
-def gamma_t(t):
-    return gamma_0
+    # build time functions from config
+    try:
+        beta_t = build_time_function('transmission_prob', config['parameters']['beta'])
+        kappa_t = build_time_function('contact_rate', config['parameters']['kappa'])
+        gamma_t = build_time_function('recovery_rate', config['parameters']['gamma'])
+        import_t = build_time_function('importation_rate', config['parameters']['importation'])        
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
 
-# exponentially increasing importation rate
-def import_t(t):
-     return int(1 * np.exp(0.2 * t))
+    # run simulation
+    print('simulating outbreaks...')
+    exp_dfs = []
+    exp_histories = []
+    for exp_i in tqdm(range(num_experiments)):
+        # initialize the experiment
+        df = init_df(num_agents, num_patient_zero)
+        # run
+        history = []
+        for i in tqdm(range(num_steps + 1), leave=False):
+            df = step(df, i, beta_t, kappa_t, gamma_t, import_t)
+            # get state counts
+            history.append(dict(df["state"].value_counts()))
 
-
-# ===============================
-# Simulate outbreak
-# ===============================
-
-print('simulating outbreaks...')
-
-exp_dfs = []
-exp_histories = []
-for exp_i in tqdm(range(num_experiments)):
-    # initialize the experiment
-    df = init_df(num_agents, num_patient_zero)
-    # run
-    history = []
-    for i in tqdm(range(num_steps + 1), leave=False):
-        df = step(df, i, beta_t, kappa_t, gamma_t, import_t)
-        # get state counts
-        history.append(dict(df["state"].value_counts()))
-
-    # store the history of the experiment
-    exp_histories.append(history)
-    # store the final state of the experiment
-    exp_dfs.append(df.copy())
+        # store the history of the experiment
+        exp_histories.append(history)
+        # store the final state of the experiment
+        exp_dfs.append(df.copy())
 
 
 # ===============================
@@ -247,5 +311,8 @@ for exp_i in tqdm(range(num_experiments)):
 
 # convert exp_dfs_clustered to a single dataframe, with columns for experiment number
 exp_dfs_clustered_combined = pd.concat(exp_dfs_clustered, keys=range(num_experiments), names=["experiment"]).reset_index(level=0)
-# export to csv (compressed)
+# export to csv (compressed), creating output directory if it doesn't exist
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+print('exporting results...')
 exp_dfs_clustered_combined.to_csv("./%s/T%d.csv.gz" % (output_dir, num_steps), index=False, compression='gzip')
