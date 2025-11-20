@@ -16,8 +16,8 @@ def validate_params(func_name, params, required_keys):
     missing = [key for key in required_keys if key not in params]
     if missing:
         raise ValueError(
-            f"Configuration Error: The '{func_name}' function is missing "
-            f"required parameters: {missing}. Please check your YAML file."
+            f"configuration error: the '{func_name}' function is missing "
+            f"required parameters: {missing}, please check your YAML file."
         )
 
 
@@ -32,17 +32,17 @@ def build_time_function(name, param_config):
     """
     # check if 'type' is specified
     if 'type' not in param_config:
-        raise ValueError(f"Configuration Error: '{name}' is missing the 'type' field.")
+        raise ValueError(f"configuration error: '{name}' is missing the 'type' field.")
 
     func_type = param_config['type']
     
     # check if 'params' exists (unless type is constant and uses 'value')
     if func_type != 'constant' and 'params' not in param_config:
-        raise ValueError(f"Configuration Error: '{name}' (type: {func_type}) requires a 'params' section.")
+        raise ValueError(f"configuration error: '{name}' (type: {func_type}) requires a 'params' section.")
 
     if func_type == 'constant':
         if 'value' not in param_config:
-             raise ValueError(f"Configuration Error: '{name}' (type: constant) requires a 'value'.")
+             raise ValueError(f"configuration error: '{name}' (type: constant) requires a 'value'.")
         val = param_config['value']
         return lambda t: val
         
@@ -53,7 +53,7 @@ def build_time_function(name, param_config):
         
         # value constraints (e.g., growth rate must be positive)
         if p['b'] < 0:
-             raise ValueError(f"Configuration Error: In '{name}', parameter 'b' (growth rate) must be positive.")
+             raise ValueError(f"configuration error: In '{name}', parameter 'b' (growth rate) must be positive.")
              
         return lambda t: sigmoid_func(t, p['a'], p['b'], p['c'], p['d'])
         
@@ -64,8 +64,8 @@ def build_time_function(name, param_config):
         
     else:
         # catch unknown function types
-        raise ValueError(f"Configuration Error: Unknown function type '{func_type}' for '{name}'. "
-                         f"Supported types are: constant, sigmoid, exponential.")
+        raise ValueError(f"configuration error: unknown function type '{func_type}' for '{name}'. "
+                         f"supported types are: constant, sigmoid, exponential.")
         
 
 # ===============================
@@ -181,7 +181,7 @@ def sigmoid_func(x, a, b, c, d):
         raise ValueError("b must be positive")
     # check that both c and d are positive
     if c < 0 or d < 0:
-        raise ValueError("Both c and d must be positive")
+        raise ValueError("both c and d must be positive")
 
     return c - (c - d) / (1 + np.exp(-b * (x - a)))
 
