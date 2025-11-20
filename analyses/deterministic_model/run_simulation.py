@@ -36,9 +36,9 @@ def build_importation_function(param_config):
 
     elif func_type == 'exponential':
         p = param_config.get('params', {})
-        validate_params('importation_rate', p, ['M0', 'rate'])
-        M0 = p['M0']
-        rate = p['rate']
+        validate_params('importation_rate', p, ['initial', 'growth'])
+        M0 = p['initial']
+        rate = p['growth']
         return lambda t: round(M0 * m.exp(rate * t))
         
     else:

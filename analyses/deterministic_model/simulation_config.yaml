@@ -20,5 +20,5 @@ epi_parameters:
     value: 100
     # type: "exponential"
     # params:
-    #   M0: 200
-    #   rate: -0.3
+    #   initial: 200
+    #   growth: -0.3
