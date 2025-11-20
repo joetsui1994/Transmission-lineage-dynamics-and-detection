@@ -85,12 +85,12 @@ parameters:
 
 ##### Epidemiological parameters
 - `<transmission_probability_parameters>`: Parameters defining the probability of infection per contact ($$\beta$$).
-- `<contact_rate_parameters>`: Parameters defining the average number of contacts per agent per time step ($$\kappa$$).
+- `<contact_rate_parameters>`: Parameters defining the average number of contacts made by each agent per time step ($$\kappa$$).
 - `<recovery_rate_parameters>`: Parameters defining the recovery rate per time step ($$\gamma$$).
-- `<importation_rate_parameters>`: Parameters defining the rate at which new infections are imported into the population per day.
+- `<importation_rate_parameters>`: Parameters defining the rate at which new infections are imported into the population.
 
 Each epidemiological parameter supports the following types, allowing for dynamic changes over time:
-| Type | Description | Required Keys in `params` |
+| Type | Description | Required keys in `params` |
 | :--- | :--- | :--- |
 | **`constant`** | Value remains fixed throughout the simulation. | `value`: The constant value (float/int). |
 | **`sigmoid`** | Transitions from an initial to a final value following a sigmoid trajectory (e.g., following the implementation/lifting of travel restrictions). | `a`: Time-shift (the greater it is, the later the growth/decay starts).<br>`b`: Growth rate (the greater it is, the sharper the change).<br>`c`: Initial value.<br>`d`: Final value. |
@@ -141,7 +141,7 @@ temporal_analysis:
 
 ### Visualisation
 
-Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/stochastic_abm/` directory to recreate the figures from the manuscript, specifically:
+Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/stochastic_abm/` directory to recreate the figures in the manuscript, specifically:
 
 - `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
 - `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates over time at different sampling fractions.
@@ -187,15 +187,15 @@ epi_parameters:
 - `<local_growth_rate>`: Exponential growth rate of local outbreak (float).
 - `importation_rate` supports `constant` (requires `value`) or `exponential` (requires `params.initial` and `params.growth`).
 
-The model will output three CSV files to the specified output directory, specifically:
+The model will output four CSV files to the specified output directory, specifically:
 
-- `detection_probs.csv`: Median lineage detection probability and 95% CI bounds for each sampling proportion.
-- `detection_probs_time.csv`: Median number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
-- `detection_probs_time.95CI_lw.csv` and `detection_probs_time.95CI_up.csv`: Lower and upper bounds of the 95% confidence interval for the number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+1. `detection_probs.csv`: Median lineage detection probability and 95% CI bounds for each sampling proportion.
+2. `detection_probs_time.csv`: Median number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+3. `detection_probs_time.95CI_lw.csv` and `detection_probs_time.95CI_up.csv`: Lower and upper bounds of the 95% confidence interval for the number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
 
 ### Visualisation
 
-Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures from the manuscript, specifically:
+Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures in the manuscript, specifically:
 
 - `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
 - `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling fractions.
