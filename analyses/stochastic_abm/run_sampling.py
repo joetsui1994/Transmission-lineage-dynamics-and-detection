@@ -17,7 +17,7 @@ def validate_config(config):
     required = ['input_file', 'output_dir', 'num_draws']
     for k in required:
         if k not in config:
-            raise ValueError(f"Config Error: Section 'sampling' missing '{k}'")
+            raise ValueError(f"configuration error: section 'sampling' missing '{k}'")
 
 def generate_sampling_fractions(conf):
     """Generates the fine-grained grid of sampling fractions."""
@@ -37,7 +37,7 @@ def generate_sampling_fractions(conf):
 # ===============================
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run Combined Sampling Analysis")
+    parser = argparse.ArgumentParser(description="Run combined sampling analysis")
     parser.add_argument('--config', type=str, required=True, help="Path to YAML config")
     parser.add_argument('--input', type=str, help="Override input file")
     parser.add_argument('--output', type=str, help="Override output dir")
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     # export scalar results
-    print("exporting scalar lineage detection probabilities...")
+    print("exporting lineage detection probabilities...")
     stats_rows = [] = []
     for sf in sorted(all_sfs):
         data = results_scalar[sf]
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     # export temporal results
     if temporal_conf['enabled']:
-        print("exporting Temporal Detection Numbers...")
+        print("exporting inferred importation rates...")
         temporal_rows = []
         for sf in sorted(list(sfs_temporal)):
             for t in time_range:
