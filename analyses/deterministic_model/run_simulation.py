@@ -104,7 +104,7 @@ if __name__ == "__main__":
     np.random.seed(seed)
 
     # epidemiological Parameters
-    params_conf = config['parameters']
+    params_conf = config['epi_parameters']
     r = params_conf['local_growth_rate']
     try:
         importation_func = build_importation_function(params_conf['importation_rate'])

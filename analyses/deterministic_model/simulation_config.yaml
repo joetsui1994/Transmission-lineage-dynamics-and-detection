@@ -13,7 +13,7 @@ sampling_parameters:
     num_divisions_upper: 50
 
 # epidemiological parameters
-parameters:
+epi_parameters:
   local_growth_rate: 0.25
   importation_rate:
     type: "constant"
