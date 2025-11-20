@@ -56,7 +56,7 @@ if __name__ == "__main__":
     sfs_grid = generate_sampling_fractions(config)
     # temporal targets (for importation intensity over time)
     temporal_conf = config.get('temporal_analysis', {'enabled': False})
-    sfs_temporal = set(temporal_conf.get('target_fractions', [])) if temporal_conf['enabled'] else set()
+    sfs_temporal = set(temporal_conf.get('target_proportions', [])) if temporal_conf['enabled'] else set()
 
     # merge them so we can iterate only once, but flag which ones need temporal calculations
     all_sfs = np.unique(np.concatenate((sfs_grid, list(sfs_temporal))))
