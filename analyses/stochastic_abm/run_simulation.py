@@ -28,7 +28,6 @@ def validate_params(func_name, params, required_keys):
 def build_time_function(name, param_config):
     """
     Returns a function f(t) based on the configuration dictionary.
-    'name' is passed just for better error messages (e.g. 'contact_rate').
     """
     # check if 'type' is specified
     if 'type' not in param_config:
