@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # extract parameters from config
     sim_conf = config['simulation']
-    seed = sim_conf.get('seed', 42)  # default to 42 if not specified
+    seed = sim_conf.get('random_seed', 42)  # default to 42 if not specified
     observe_time = sim_conf.get('observe_time', 40)  # default to 40 if not specified
     output_dir = sim_conf.get('output_dir', './results')  # default to ./results if not specified
 

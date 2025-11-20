@@ -1,6 +1,6 @@
 # general settings
 simulation:
-  seed: 42
+  random_seed: 42
   observe_time: 20
   output_dir: "./results"
 
