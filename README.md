@@ -27,9 +27,10 @@ The structure of this repository is shown below:
 │   └── stochastic_abm
 │       ├── inferred_importation_rates_plot.ipynb
 │       ├── lineage_detection_probs_plot.ipynb
-│       ├── run_sampling_simulation.py
+│       ├── run_sampling.py
 │       ├── run_simulation.py
-│       └── simulate_temporal_sampling.ipynb
+│       ├── sampling_config.yaml
+│       └── simulation_config.yaml
 ├── data
 │   ├── COVID-19_studies_extracted_data.tsv
 │   └── world-administrative-boundaries
@@ -43,7 +44,9 @@ The structure of this repository is shown below:
 └── gitignore.txt
 ```
 
-## Stochastic agent-based simulation
+## Stochastic agent-based model
+
+### Running the model
 
 Model parameters are specified through a YAML configuration file. To run a simulation, simply execute the `run_simulation.py` script located in the `analyses/stochastic_abm/` directory, providing the path to your configuration file as an argument (`--config`). For example:
 
@@ -53,7 +56,7 @@ python run_simulation.py --config config.yaml
 
 This will run the simulation and save the results as a compressed CSV file to the output directory specified in your configuration file (default is `./results`).
 
-### Configuration file format
+#### Configuration file
 
 The configuration file should be in YAML format and include the following sections:
 
@@ -72,7 +75,7 @@ parameters:
   importation: <importation_rate_parameters>
 ```
 
-#### General settings
+##### General settings
 - `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
 - `<number_of_agents>`: Total population size (or number of agents) (integer).
 - `<number_of_time_steps>`: Duration of the simulation in discrete time steps (integer).
@@ -80,7 +83,7 @@ parameters:
 - `<number_of_initial_infected_agents>`: Number of initially infected agents at the start of the simulation (integer).
 - `<output_directory>`: Directory where simulation results will be saved.
 
-#### Epidemiological parameters
+##### Epidemiological parameters
 - `<transmission_probability_parameters>`: Parameters defining the probability of infection per contact ($$\beta$$).
 - `<contact_rate_parameters>`: Parameters defining the average number of contacts per agent per time step ($$\kappa$$).
 - `<recovery_rate_parameters>`: Parameters defining the recovery rate per time step ($$\gamma$$).
@@ -92,5 +95,109 @@ Each epidemiological parameter supports the following types, allowing for dynami
 | **`constant`** | Value remains fixed throughout the simulation. | `value`: The constant value (float/int). |
 | **`sigmoid`** | Transitions from an initial to a final value following a sigmoid trajectory (e.g., following the implementation/lifting of travel restrictions). | `a`: Time-shift (the greater it is, the later the growth/decay starts).<br>`b`: Growth rate (the greater it is, the sharper the change).<br>`c`: Initial value.<br>`d`: Final value. |
 | **`exponential`** | Grows or decays exponentially over time. | `initial`: Value at $t=0$.<br>`growth`: Rate coefficient ($>0$ for growth, $<0$ for decay). |
+
+### Simulating a phylogeographic importation analysis (with subsampling)
+
+Once the stochastic ABM simulation is complete and you have located the output CSV file (e.g., `results/T10.csv.gz`), you can run the sampling analysis to simulate the process of phylogeographic importation analysis with subsampling.
+
+To run the sampling analysis, execute the `run_sampling.py` script located in the `analyses/stochastic_abm/` directory, providing the path to your sampling configuration file:
+
+```bash
+python run_sampling.py --config sampling_config.yaml
+```
+
+This will run the sampling analysis and save the results to the output directory specified in your configuration file (default is `./results`). Specifically, it generates two key output files:
+
+1. `detection_probs.median_95CI.csv`: Proportion (median, 95% CI) of total importation events detected at different sampling proportions beteween 0 and 1.
+2. `detection_numbers_by_time.csv`: Inferred importation intensity over time at specified sampling proportions, assuming that the timing of importation of each detected lineage can be accurately recovered.
+
+### Configuration file
+
+The configuration file should be in YAML format and include the following sections:
+
+```yaml
+input_file: <path_to_simulation_output>
+output_dir: <output_directory>
+num_draws: <number_of_random_draws>
+random_seed: <random_seed>
+sampling_grid:
+  split_threshold: <threshold_to_switch_between_fine_and_coarse_grid>
+  num_divisions_lower: <number_of_divisions_below_threshold>
+  num_divisions_upper: <number_of_divisions_above_threshold>
+temporal_analysis:
+  enabled: <true_or_false>
+  target_proportions: [<list_of_sampling_proportions>]
+```
+
+- `<path_to_simulation_output>`: Path to the input simulation CSV file (e.g., `results/T10.csv.gz`).
+- `<output_directory>`: Directory where sampling results will be saved.
+- `<number_of_random_draws>`: Number of random draws per sampling fraction (integer).
+- `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
+- `<threshold_to_switch_between_fine_and_coarse_grid>`: Threshold to switch between fine and coarse sampling grid (float between 0 and 1).
+- `<number_of_divisions_below_threshold>`: Number of divisions in the sampling grid below the threshold (integer).
+- `<number_of_divisions_above_threshold>`: Number of divisions in the sampling grid above the threshold (integer).
+- `<true_or_false>`: Whether to enable temporal analysis, i.e. to calculate inferred importation intensities over time (boolean).
+- `<list_of_sampling_proportions>`: List of sampling proportions (between 0 and 1) for which to calculate inferred importation intensities over time.
+
+### Visualisation
+
+Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/stochastic_abm/` directory to recreate the figures from the manuscript, specifically:
+
+- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
+- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates over time at different sampling fractions.
+
+## Deterministic model with local exponential growth
+
+### Running the model
+
+Model parameters are specified through a YAML configuration file. To run a simulation, simply execute the `run_simulation.py` script located in the `analyses/deterministic_model/` directory, providing the path to your configuration file as an argument (`--config`). For example:
+
+```bash
+python run_simulation.py --config config.yaml
+```
+
+This will run both the outbreak simulation and importation analysis (with subsampling), and save the results as a compressed CSV file to the output directory specified in your configuration file (default is `./results`).
+
+#### Configuration file
+
+```yaml
+simulation:
+  random_seed: <random_seed>
+  observe_time: <duration_in_days>
+  output_dir: <output_directory>
+sampling_parameters:
+  num_sampling_simulations: <number_of_sampling_runs>
+  grid:
+    split_threshold: <sampling_fraction_threshold>
+    num_divisions_lower: <number_of_divisions_below_threshold>
+    num_divisions_upper: <number_of_divisions_above_threshold>
+epi_parameters:
+  local_growth_rate: <local_growth_rate>
+  importation_rate:
+    type: <constant_or_exponential>
+    value/params: <function_specific_values>
+```
+- `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
+- `<observe_time>`: Time at which samples are taken (and time horizon for which importation intensities are evaluated) (integer).
+- `<output_directory>`: Directory where simulation results will be saved.
+- `num_sampling_simulations`: Number of independent sampling runs to perform (integer).
+- `<sampling_fraction_threshold>`: Threshold to switch between fine and coarse sampling grid (float between 0 and 1).
+- `<number_of_divisions_below_threshold>`: Number of divisions in the sampling grid below the threshold (integer).
+- `<number_of_divisions_above_threshold>`: Number of divisions in the sampling grid above the threshold (integer).
+- `<local_growth_rate>`: Exponential growth rate of local outbreak (float).
+- `importation_rate` supports `constant` (requires `value`) or `exponential` (requires `params.initial` and `params.growth`).
+
+The model will output three CSV files to the specified output directory, specifically:
+
+- `detection_probs.csv`: Median lineage detection probability and 95% CI bounds for each sampling proportion.
+- `detection_probs_time.csv`: Median number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+- `detection_probs_time.95CI_lw.csv` and `detection_probs_time.95CI_up.csv`: Lower and upper bounds of the 95% confidence interval for the number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+
+### Visualisation
+
+Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures from the manuscript, specifically:
+
+- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
+- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling fractions.
 
 ---
