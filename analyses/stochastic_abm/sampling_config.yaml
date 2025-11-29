@@ -1,13 +1,13 @@
-input_file: "./results/T10.csv.gz"
+input_file: "./results/T50.csv.gz"
 output_dir: "./results"
 num_draws: 200
 random_seed: 42
 
 # for calculating lineage detection probabilities
 sampling_grid:
-  split_threshold: 0.05
-  num_divisions_lower: 30
-  num_divisions_upper: 30
+  split_threshold: 0.1
+  num_divisions_lower: 50
+  num_divisions_upper: 50
 
 # for calculating inferred importation intensities
 temporal_analysis:
