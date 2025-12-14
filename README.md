@@ -45,6 +45,28 @@ The structure of this repository is shown below:
 └── gitignore.txt
 ```
 
+To ensure reproducibility and avoid dependency conflicts, we recommend running the code in a dedicated virtual environment. To do so, you can first clone the repository by running:
+
+```bash
+git clone [https://github.com/joetsui1994/Transmission-lineage-dynamics-and-detection.git](https://github.com/joetsui1994/Transmission-lineage-dynamics-and-detection.git)
+cd Transmission-lineage-dynamics-and-detection
+```
+
+Then, create and activate a virtual environment (using `venv` or `conda`), and install the required packages listed in `requirements.txt`:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+If you plan to run any of the Jupyter notebooks, ensure that your virtual environment kernel is available in Jupyter:
+
+```bash
+pip install ipykernel
+python -m ipykernel install --user --name=transmission_lineage_env
+```
+
 ## Stochastic agent-based model
 
 ### Running the model
