@@ -120,8 +120,8 @@ The model will output four CSV files to the specified output directory, specific
 
 Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures in the manuscript, specifically:
 
-- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
-- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling fractions.
+- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling proportions.
+- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling proportions.
 
 ## Stochastic agent-based model
 
@@ -212,7 +212,7 @@ temporal_analysis:
 
 - `<path_to_simulation_output>`: Path to the input simulation CSV file (e.g., `results/T10.csv.gz`).
 - `<output_directory>`: Directory where sampling results will be saved.
-- `<number_of_random_draws>`: Number of random draws per sampling fraction (integer).
+- `<number_of_random_draws>`: Number of random draws per sampling proportion (integer).
 - `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
 - `<threshold_to_switch_between_fine_and_coarse_grid>`: Threshold to switch between fine and coarse sampling grid (float between 0 and 1).
 - `<number_of_divisions_below_threshold>`: Number of divisions in the sampling grid below the threshold (integer).
@@ -224,7 +224,7 @@ temporal_analysis:
 
 Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/stochastic_abm/` directory to recreate the figures in the manuscript, specifically:
 
-- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
-- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates over time at different sampling fractions.
+- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling proportions.
+- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates over time at different sampling proportions.
 
 ---
