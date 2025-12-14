@@ -67,7 +67,65 @@ pip install ipykernel
 python -m ipykernel install --user --name=transmission_lineage_env
 ```
 
+## Deterministic model with local exponential growth
+
+This section is related to the deterministic transmission model described in Section 5 of the manuscript. This model simulates the importation of viral lineages and their subsequent local exponential growth (with no depletion of susceptibles and no recovery process), followed by a phylogeographic importation analysis with subsampling. Outputs from this model are used to generate Figure 3 in the manuscript.
+
+### Running the model
+
+Model parameters are specified through a YAML configuration file. To run a simulation, simply execute the `run_simulation.py` script located in the `analyses/deterministic_model/` directory, providing the path to your configuration file as an argument (`--config`). For example:
+
+```bash
+python run_simulation.py --config config.yaml
+```
+
+This will run both the outbreak simulation and importation analysis (with subsampling), and save the results as a compressed CSV file to the output directory specified in your configuration file (default is `./results`).
+
+#### Configuration file
+
+```yaml
+simulation:
+  random_seed: <random_seed>
+  observe_time: <duration_in_days>
+  output_dir: <output_directory>
+sampling_parameters:
+  num_sampling_simulations: <number_of_sampling_runs>
+  grid:
+    split_threshold: <sampling_fraction_threshold>
+    num_divisions_lower: <number_of_divisions_below_threshold>
+    num_divisions_upper: <number_of_divisions_above_threshold>
+epi_parameters:
+  local_growth_rate: <local_growth_rate>
+  importation_rate:
+    type: <constant_or_exponential>
+    value/params: <function_specific_values>
+```
+- `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
+- `<observe_time>`: Time at which samples are taken (and time horizon for which importation intensities are evaluated) (integer).
+- `<output_directory>`: Directory where simulation results will be saved.
+- `num_sampling_simulations`: Number of independent sampling runs to perform (integer).
+- `<sampling_fraction_threshold>`: Threshold to switch between fine and coarse sampling grid (float between 0 and 1).
+- `<number_of_divisions_below_threshold>`: Number of divisions in the sampling grid below the threshold (integer).
+- `<number_of_divisions_above_threshold>`: Number of divisions in the sampling grid above the threshold (integer).
+- `<local_growth_rate>`: Exponential growth rate of local outbreak (float).
+- `importation_rate` supports `constant` (requires `value`) or `exponential` (requires `params.initial` and `params.growth`).
+
+The model will output four CSV files to the specified output directory, specifically:
+
+1. `detection_probs.csv`: Median lineage detection probability and 95% CI bounds for each sampling proportion.
+2. `detection_probs_time.csv`: Median number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+3. `detection_probs_time.95CI_lw.csv` and `detection_probs_time.95CI_up.csv`: Lower and upper bounds of the 95% confidence interval for the number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
+
+### Visualisation
+
+Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures in the manuscript, specifically:
+
+- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
+- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling fractions.
+
 ## Stochastic agent-based model
+
+This section is related to the stochastic agent-based model (ABM) described in Section 6 of the manuscript. Unlike the deterministic model, here we assume a finite population size with depletion of susceptibles and a probabilistic recovery process, and that transmission occurs through random contacts between agents (with homogeneous mixing). Outputs from this model are used to generate Figures 4 and 5 in the manuscript (and Figure S4 in  Supplementary Information).
 
 ### Running the model
 
@@ -168,59 +226,5 @@ Once the importation analysis is complete, you can either analyse the output CSV
 
 - `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
 - `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates over time at different sampling fractions.
-
-## Deterministic model with local exponential growth
-
-### Running the model
-
-Model parameters are specified through a YAML configuration file. To run a simulation, simply execute the `run_simulation.py` script located in the `analyses/deterministic_model/` directory, providing the path to your configuration file as an argument (`--config`). For example:
-
-```bash
-python run_simulation.py --config config.yaml
-```
-
-This will run both the outbreak simulation and importation analysis (with subsampling), and save the results as a compressed CSV file to the output directory specified in your configuration file (default is `./results`).
-
-#### Configuration file
-
-```yaml
-simulation:
-  random_seed: <random_seed>
-  observe_time: <duration_in_days>
-  output_dir: <output_directory>
-sampling_parameters:
-  num_sampling_simulations: <number_of_sampling_runs>
-  grid:
-    split_threshold: <sampling_fraction_threshold>
-    num_divisions_lower: <number_of_divisions_below_threshold>
-    num_divisions_upper: <number_of_divisions_above_threshold>
-epi_parameters:
-  local_growth_rate: <local_growth_rate>
-  importation_rate:
-    type: <constant_or_exponential>
-    value/params: <function_specific_values>
-```
-- `<random_seed>`: Seed for random number generation to ensure reproducibility (integer).
-- `<observe_time>`: Time at which samples are taken (and time horizon for which importation intensities are evaluated) (integer).
-- `<output_directory>`: Directory where simulation results will be saved.
-- `num_sampling_simulations`: Number of independent sampling runs to perform (integer).
-- `<sampling_fraction_threshold>`: Threshold to switch between fine and coarse sampling grid (float between 0 and 1).
-- `<number_of_divisions_below_threshold>`: Number of divisions in the sampling grid below the threshold (integer).
-- `<number_of_divisions_above_threshold>`: Number of divisions in the sampling grid above the threshold (integer).
-- `<local_growth_rate>`: Exponential growth rate of local outbreak (float).
-- `importation_rate` supports `constant` (requires `value`) or `exponential` (requires `params.initial` and `params.growth`).
-
-The model will output four CSV files to the specified output directory, specifically:
-
-1. `detection_probs.csv`: Median lineage detection probability and 95% CI bounds for each sampling proportion.
-2. `detection_probs_time.csv`: Median number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
-3. `detection_probs_time.95CI_lw.csv` and `detection_probs_time.95CI_up.csv`: Lower and upper bounds of the 95% confidence interval for the number of importation events inferred at each time point (up to `observe_time`) for each sampling proportion.
-
-### Visualisation
-
-Once the importation analysis is complete, you can either analyse the output CSV files directly, or use the provided Jupyter notebooks in the `analyses/deterministic_model/` directory to recreate the figures in the manuscript, specifically:
-
-- `lineage_detection_probs_plot.ipynb`: To visualise the lineage detection probabilities (i.e. proportion of extant lineages sampled) at different sampling fractions.
-- `inferred_importation_rates_plot.ipynb`: To visualise the inferred importation rates (median and 95% CI) over time at different sampling fractions.
 
 ---
