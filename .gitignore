@@ -1,0 +1,18 @@
+**/.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Virtual Environments (exclude all common names)
+venv/
+.venv/
+env/
+ENV/
+
+# Python Bytecode (generated automatically when you run scripts)
+__pycache__/
+*.pyc
